@@ -1,0 +1,46 @@
+name: Security
+
+on:
+  push:
+    branches: [main, uat]
+  pull_request:
+  schedule:
+    - cron: '0 6 * * 1'   # weekly Monday scan, catches newly-disclosed vulns
+
+permissions:
+  contents: read
+  security-events: write   # lets gosec upload SARIF to the Security tab
+
+jobs:
+  govulncheck:
+    name: govulncheck (known vulnerabilities)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.24'
+      - name: Install govulncheck
+        run: go install golang.org/x/vuln/cmd/govulncheck@latest
+      - name: Run govulncheck
+        run: govulncheck ./...
+
+  gosec:
+    name: gosec (static security analysis)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.24'
+      - name: Run gosec
+        uses: securego/gosec@master
+        with:
+          # -no-fail: report findings but don't fail the build (advisory);
+          # remove -no-fail once the tree is clean to make findings blocking.
+          # SARIF upload puts results in the repo's Security tab.
+          args: '-no-fail -fmt sarif -out results.sarif ./...'
+      - name: Upload SARIF to Security tab
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: results.sarif

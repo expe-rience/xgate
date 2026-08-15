@@ -1,0 +1,208 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1240 1580" font-family="'Segoe UI',system-ui,sans-serif">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0d1117"/>
+      <stop offset="1" stop-color="#0a0e14"/>
+    </linearGradient>
+    <linearGradient id="clientG" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1b2a4a"/><stop offset="1" stop-color="#13223d"/>
+    </linearGradient>
+    <linearGradient id="daemonG" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#12243d"/><stop offset="1" stop-color="#0f1e33"/>
+    </linearGradient>
+    <linearGradient id="coreG" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#3a2a12"/><stop offset="1" stop-color="#2e2110"/>
+    </linearGradient>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#2f81f7"/>
+    </marker>
+    <marker id="arrowBack" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#3fb950"/>
+    </marker>
+    <marker id="arrowGrey" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#8b949e"/>
+    </marker>
+    <style>
+      .h1{fill:#e6edf3;font-size:30px;font-weight:700}
+      .h2{fill:#e6edf3;font-size:20px;font-weight:700}
+      .sub{fill:#8b949e;font-size:14px}
+      .lbl{fill:#e6edf3;font-size:15px;font-weight:600}
+      .txt{fill:#adbac7;font-size:13px}
+      .mono{font-family:'Consolas',monospace;fill:#79c0ff;font-size:12.5px}
+      .tag{fill:#6e7681;font-size:11px;letter-spacing:1px;font-weight:600}
+      .step{fill:#2f81f7;font-size:13px;font-weight:700}
+      .stepB{fill:#3fb950;font-size:13px;font-weight:700}
+      .flowtxt{fill:#c9d1d9;font-size:13.5px}
+      .flowmono{font-family:'Consolas',monospace;fill:#79c0ff;font-size:12px}
+      .note{fill:#8b949e;font-size:12px}
+    </style>
+  </defs>
+
+  <rect width="1240" height="1580" fill="url(#bg)"/>
+
+  <!-- Title -->
+  <text x="60" y="62" class="h1">xrm — architecture &amp; connection flow</text>
+  <text x="60" y="90" class="sub">Cross-platform remote administration over QUIC · certificate-based mutual auth · capability-scoped access</text>
+  <line x1="60" y1="108" x2="1180" y2="108" stroke="#21262d" stroke-width="1"/>
+
+  <!-- ============ PART 1: ARCHITECTURE ============ -->
+  <text x="60" y="148" class="tag">PART 1 — COMPONENTS</text>
+
+  <!-- CLIENT MACHINE -->
+  <rect x="60" y="168" width="420" height="360" rx="14" fill="url(#clientG)" stroke="#2f81f7" stroke-width="1.5"/>
+  <text x="84" y="200" class="h2">Client machine</text>
+  <text x="84" y="222" class="sub">e.g. your Windows laptop / Linux workstation</text>
+
+  <!-- xrm CLI -->
+  <rect x="84" y="240" width="176" height="120" rx="10" fill="#0d1117" stroke="#30363d"/>
+  <text x="100" y="266" class="lbl">xrm</text>
+  <text x="100" y="286" class="txt">CLI client</text>
+  <text x="100" y="308" class="mono">--cap shell</text>
+  <text x="100" y="326" class="mono">--cap exec:/path</text>
+  <text x="100" y="344" class="mono">--enroll &lt;token&gt;</text>
+
+  <!-- xrm-gui -->
+  <rect x="280" y="240" width="176" height="120" rx="10" fill="#0d1117" stroke="#30363d"/>
+  <text x="296" y="266" class="lbl">xrm-gui</text>
+  <text x="296" y="286" class="txt">browser GUI</text>
+  <text x="296" y="308" class="txt">saved hosts +</text>
+  <text x="296" y="326" class="txt">xterm.js terminal</text>
+  <text x="296" y="344" class="note">(127.0.0.1 only)</text>
+
+  <!-- client-held creds -->
+  <rect x="84" y="376" width="372" height="128" rx="10" fill="#0d1117" stroke="#30363d"/>
+  <text x="100" y="402" class="lbl">Holds</text>
+  <text x="100" y="426" class="txt">• client certificate (CA-signed, short-lived)</text>
+  <text x="100" y="448" class="txt">• client private key (Ed25519)</text>
+  <text x="100" y="470" class="txt">• trusted CA public key</text>
+  <text x="100" y="492" class="note">key never leaves this machine</text>
+
+  <!-- DAEMON MACHINE -->
+  <rect x="760" y="168" width="420" height="360" rx="14" fill="url(#daemonG)" stroke="#238636" stroke-width="1.5"/>
+  <text x="784" y="200" class="h2">Target machine</text>
+  <text x="784" y="222" class="sub">the box you connect to · runs the xrm daemon</text>
+
+  <!-- xrmd -->
+  <rect x="784" y="240" width="372" height="132" rx="10" fill="#0d1117" stroke="#30363d"/>
+  <text x="800" y="266" class="lbl">xrmd</text>
+  <text x="800" y="286" class="txt">daemon · listens on :7847 (UDP + TCP)</text>
+  <text x="800" y="310" class="txt">• verifies client cert &amp; capabilities</text>
+  <text x="800" y="332" class="txt">• spawns PTY shell / runs exec</text>
+  <text x="800" y="354" class="txt">• writes structured audit log</text>
+
+  <!-- daemon-held -->
+  <rect x="784" y="388" width="372" height="116" rx="10" fill="#0d1117" stroke="#30363d"/>
+  <text x="800" y="414" class="lbl">Holds</text>
+  <text x="800" y="438" class="txt">• host certificate + key (proves the host)</text>
+  <text x="800" y="460" class="txt">• trusted CA public key</text>
+  <text x="800" y="482" class="txt">• config (xrmd.json) + audit.jsonl</text>
+
+  <!-- CA (center) -->
+  <rect x="510" y="220" width="220" height="150" rx="12" fill="url(#coreG)" stroke="#d29922" stroke-width="1.5"/>
+  <text x="620" y="252" class="h2" text-anchor="middle">CA</text>
+  <text x="620" y="274" class="sub" text-anchor="middle">certificate authority</text>
+  <text x="620" y="300" class="txt" text-anchor="middle">signs host + client</text>
+  <text x="620" y="320" class="txt" text-anchor="middle">certificates</text>
+  <text x="620" y="344" class="note" text-anchor="middle">offline / mint / quickstart</text>
+
+  <!-- CA signs arrows -->
+  <path d="M510,300 C495,300 495,300 480,300" fill="none" stroke="#d29922" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#arrowGrey)"/>
+  <path d="M730,300 C745,300 745,300 760,300" fill="none" stroke="#d29922" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#arrowGrey)"/>
+  <text x="620" y="392" class="note" text-anchor="middle">signs certs for both sides (offline)</text>
+
+  <!-- connection between machines -->
+  <path d="M480,470 C610,470 630,470 760,470" fill="none" stroke="#2f81f7" stroke-width="2.5" marker-end="url(#arrow)"/>
+  <rect x="512" y="446" width="216" height="48" rx="10" fill="#0d1117" stroke="#2f81f7"/>
+  <text x="620" y="467" class="lbl" text-anchor="middle">QUIC (UDP :7847)</text>
+  <text x="620" y="485" class="note" text-anchor="middle">↳ falls back to TCP+TLS if UDP blocked</text>
+
+  <!-- ============ PART 2: TRANSPORT ============ -->
+  <text x="60" y="586" class="tag">PART 2 — TRANSPORT LAYER (road-agnostic)</text>
+  <rect x="60" y="606" width="1120" height="150" rx="14" fill="#11161d" stroke="#21262d"/>
+
+  <rect x="90" y="636" width="300" height="92" rx="10" fill="#0d1117" stroke="#2f81f7"/>
+  <text x="110" y="662" class="lbl">1 · Try QUIC first</text>
+  <text x="110" y="684" class="txt">fast, multiplexed, TLS 1.3 built in,</text>
+  <text x="110" y="704" class="txt">survives network switches</text>
+  <text x="110" y="722" class="note">~2s deadline</text>
+
+  <path d="M390,682 L430,682" fill="none" stroke="#8b949e" stroke-width="2" marker-end="url(#arrowGrey)"/>
+  <text x="410" y="672" class="note" text-anchor="middle">blocked?</text>
+
+  <rect x="440" y="636" width="300" height="92" rx="10" fill="#0d1117" stroke="#3fb950"/>
+  <text x="460" y="662" class="lbl">2 · Fall back to TCP</text>
+  <text x="460" y="684" class="txt">TCP + TLS 1.3 + yamux multiplexing</text>
+  <text x="460" y="704" class="txt">works through UDP-blocking firewalls</text>
+  <text x="460" y="722" class="note">same encryption, slower</text>
+
+  <path d="M740,682 L790,682" fill="none" stroke="#8b949e" stroke-width="2" marker-end="url(#arrowGrey)"/>
+
+  <rect x="800" y="636" width="350" height="92" rx="10" fill="#0d1117" stroke="#30363d"/>
+  <text x="820" y="662" class="lbl">Same interface either way</text>
+  <text x="820" y="684" class="txt">handshake &amp; shell code see only</text>
+  <text x="820" y="704" class="mono">Conn / Stream</text>
+  <text x="820" y="722" class="note">security layer never touches transport</text>
+
+  <!-- ============ PART 3: CONNECTION FLOW ============ -->
+  <text x="60" y="800" class="tag">PART 3 — CONNECTION FLOW (mutual authentication)</text>
+
+  <!-- two lifelines -->
+  <text x="230" y="838" class="h2" text-anchor="middle">Client (xrm)</text>
+  <text x="1010" y="838" class="h2" text-anchor="middle">Daemon (xrmd)</text>
+  <line x1="230" y1="852" x2="230" y2="1500" stroke="#2f81f7" stroke-width="2" stroke-dasharray="2 4"/>
+  <line x1="1010" y1="852" x2="1010" y2="1500" stroke="#238636" stroke-width="2" stroke-dasharray="2 4"/>
+
+  <!-- step 0 -->
+  <text x="620" y="884" class="note" text-anchor="middle">TLS 1.3 encrypts the pipe — but carries NO identity. Trust comes from the cert exchange below.</text>
+
+  <!-- step 1 hello -->
+  <path d="M230,912 L1010,912" fill="none" stroke="#2f81f7" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="240" y="904" class="step">1 · hello</text>
+  <text x="620" y="932" class="flowmono" text-anchor="middle">{ proto_version, client_nonce }</text>
+
+  <!-- step 2 host_auth -->
+  <path d="M1010,972 L230,972" fill="none" stroke="#3fb950" stroke-width="2" marker-end="url(#arrowBack)"/>
+  <text x="1000" y="964" class="stepB" text-anchor="end">2 · host_auth  (daemon proves itself FIRST)</text>
+  <text x="620" y="992" class="flowmono" text-anchor="middle">{ host_cert, server_nonce, sig(transcript) }</text>
+
+  <!-- client verifies host -->
+  <rect x="80" y="1012" width="300" height="70" rx="8" fill="#11161d" stroke="#2f81f7"/>
+  <text x="96" y="1035" class="flowtxt">Client verifies host cert</text>
+  <text x="96" y="1055" class="note">chains to trusted CA? signature valid?</text>
+  <text x="96" y="1072" class="note">✗ → abort, never send our cert  (no TOFU prompt)</text>
+
+  <!-- step 3 client_auth -->
+  <path d="M230,1122 L1010,1122" fill="none" stroke="#2f81f7" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="240" y="1114" class="step">3 · client_auth</text>
+  <text x="620" y="1142" class="flowmono" text-anchor="middle">{ client_cert, sig(transcript), requested_caps }</text>
+
+  <!-- daemon 3 checks -->
+  <rect x="860" y="1162" width="300" height="118" rx="8" fill="#11161d" stroke="#238636"/>
+  <text x="876" y="1185" class="flowtxt">Daemon runs 3 checks:</text>
+  <text x="876" y="1207" class="note">① cert chains to trusted CA &amp; not expired</text>
+  <text x="876" y="1227" class="note">② proof-of-possession (holds the key)</text>
+  <text x="876" y="1247" class="note">③ requested caps ⊆ granted caps</text>
+  <text x="876" y="1269" class="note">any fail → coarse "rejected", logged</text>
+
+  <!-- step 4 accepted -->
+  <path d="M1010,1310 L230,1310" fill="none" stroke="#3fb950" stroke-width="2" marker-end="url(#arrowBack)"/>
+  <text x="1000" y="1302" class="stepB" text-anchor="end">4 · accepted</text>
+  <text x="620" y="1330" class="flowmono" text-anchor="middle">{ session_id, granted_caps }</text>
+
+  <!-- step 5 session -->
+  <rect x="230" y="1360" width="780" height="1" fill="none"/>
+  <path d="M230,1380 L1010,1380" fill="none" stroke="#2f81f7" stroke-width="2" marker-end="url(#arrow)"/>
+  <path d="M1010,1400 L230,1400" fill="none" stroke="#3fb950" stroke-width="2" marker-end="url(#arrowBack)"/>
+  <text x="240" y="1372" class="step">5 · session — interactive PTY shell or scoped exec</text>
+  <text x="620" y="1424" class="flowmono" text-anchor="middle">stdin / resize  →   ←  stdout  (real /dev/pts or ConPTY)</text>
+
+  <!-- per-request enforcement -->
+  <rect x="360" y="1446" width="520" height="54" rx="8" fill="#11161d" stroke="#d29922"/>
+  <text x="620" y="1469" class="flowtxt" text-anchor="middle">Every request re-checked against granted capabilities</text>
+  <text x="620" y="1489" class="note" text-anchor="middle">the grant is a ceiling, not a one-time pass · all actions audited</text>
+
+  <!-- footer -->
+  <line x1="60" y1="1524" x2="1180" y2="1524" stroke="#21262d"/>
+  <text x="60" y="1552" class="note">Ed25519 signatures · TLS 1.3 (X25519 / ChaCha20-Poly1305) · short-lived certs (minutes–hours) · fail-closed authorization</text>
+  <text x="60" y="1572" class="note">Security core lives in an I/O-free, unit-tested package. Status: pre-alpha, unaudited — for testing &amp; feedback, not production.</text>
+</svg>

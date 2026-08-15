@@ -1,0 +1,28 @@
+# Secrets and runtime artifacts — NEVER commit these
+*.key
+*.cert
+*.pem
+xgated.json
+hosts.json
+audit.jsonl
+policy-audit.jsonl
+xgate-data/
+enrolled/
+
+# Build output — binaries are published via GitHub Releases, not committed
+/dist/
+*.exe
+xgated
+xgate
+xgate-gui
+xgate-policy
+mint
+
+# Go
+/vendor/
+
+# Editors / OS
+.DS_Store
+.idea/
+.vscode/
+*.swp

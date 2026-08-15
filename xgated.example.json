@@ -1,0 +1,8 @@
+{
+  "listen": "0.0.0.0:7847",
+  "trusted_ca": "REPLACE_WITH_CA_PUBLIC_KEY_HEX",
+  "host_cert_path": "host.cert",
+  "host_key_path": "host.key",
+  "skew_seconds": 30,
+  "audit_path": "audit.jsonl"
+}

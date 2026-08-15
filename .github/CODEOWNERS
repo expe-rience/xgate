@@ -1,0 +1,12 @@
+# Code owners are automatically requested for review on any PR that touches
+# matching files, and — when "Require review from Code Owners" is enabled in
+# branch protection — their approval is REQUIRED before merge.
+#
+# Replace YOUR-GITHUB-USERNAME below with your actual GitHub handle before
+# pushing. The leading * means "every file in the repo".
+
+*       @YOUR-GITHUB-USERNAME
+
+# You can scope stricter ownership to the security-critical core if you later
+# add other maintainers — e.g. only you may approve changes to proto/:
+# /proto/  @YOUR-GITHUB-USERNAME
