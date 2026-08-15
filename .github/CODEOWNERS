@@ -5,8 +5,8 @@
 # Replace YOUR-GITHUB-USERNAME below with your actual GitHub handle before
 # pushing. The leading * means "every file in the repo".
 
-*       @YOUR-GITHUB-USERNAME
+*       @expe-rience
 
 # You can scope stricter ownership to the security-critical core if you later
 # add other maintainers — e.g. only you may approve changes to proto/:
-# /proto/  @YOUR-GITHUB-USERNAME
+# /proto/  @expe-rience
