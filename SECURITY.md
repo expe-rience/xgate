@@ -18,7 +18,7 @@ Instead, report privately using **GitHub's private vulnerability reporting**:
 2. Click **Report a vulnerability**.
 3. Describe the issue, steps to reproduce, and impact.
 
-If private reporting is unavailable, email **YOUR-CONTACT-EMAIL** with the
+If private reporting is unavailable, email **ankitit4avast@gmail.com** with the
 details. (Replace this with a real address before publishing.)
 
 Please include:
