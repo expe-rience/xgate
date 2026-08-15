@@ -336,19 +336,6 @@ docs/           interactive-shell setup, Go-vs-Rust rationale
 decision is reachable from a plain unit test. Keep it that way.
 
 ---
-
-## Before you push this repo
-
-1. Replace `YOURNAME` throughout with your GitHub user/org:
-   ```bash
-   grep -rl 'YOURNAME' . | xargs sed -i 's|YOURNAME|your-actual-name|g'
-   ```
-   This updates the module path in `go.mod` and every import.
-2. Add a `LICENSE` file (this repo ships Apache-2.0; keep or change it).
-3. Confirm the repo name is free and set the description/topics.
-
----
-
 ## Security
 
 **Unaudited pre-alpha — do not use for real access.** See
