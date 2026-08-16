@@ -147,7 +147,7 @@ No contribution is too small, including "your setup instructions confused me."
 ## Build
 
 ```bash
-git clone https://github.com/YOURNAME/xgate.git
+git clone https://github.com/expe-rience/xgate.git
 cd xgate
 go build ./...        # builds xgated, xgate, mint for your platform
 go test ./...         # runs the security-core tests
