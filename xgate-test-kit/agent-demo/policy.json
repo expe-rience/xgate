@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "default_ttl_seconds": 60,
+  "agents": {
+    "sre-agent": {
+      "allow": ["restart:payments-service", "restart:auth-service"]
+    }
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "default_ttl_seconds": 60,
+  "agents": {
+    "sre-agent": {
+      "allow": ["restart:nginx", "read:/var/log/nginx/*"],
+      "deny": ["restart:payments-db"],
+      "ttl_seconds": 30
+    },
+    "chatbot": {
+      "allow": ["restart:ui"]
+    },
+    "deploy-agent": {
+      "allow": ["deploy:payments-service"],
+      "ttl_seconds": 120
+    }
+  }
+}

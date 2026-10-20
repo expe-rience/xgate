@@ -26,8 +26,19 @@ implemented and tested:
 - **No lateral movement from an exec grant.** An `exec` capability runs one
   program directly — no shell is spawned, so there's no shell to pivot from and
   no command-injection surface.
-- **Signed audit trail.** The daemon records what happened; the policy engine
-  records every grant and denial.
+- **Real single-use enforcement.** Each certificate carries a unique serial
+  assigned at issuance. The daemon tracks which serials have already
+  authenticated and rejects a repeat — even well within the certificate's
+  TTL — and this is persisted to disk, so it survives a daemon restart. A
+  captured or replayed certificate is good for exactly one session, not one
+  TTL window.
+- **Tamper-evident audit trail.** The daemon and the policy engine each write a
+  hash-chained, Ed25519-signed log (every record carries its sequence number,
+  the previous record's hash, its own hash, and a signature). Editing or
+  deleting a record is detected by `xgated verify-audit` /
+  `xgate-policy verify-audit`, and a daemon refuses to start on a log that
+  fails verification. The policy engine writes its audit record *before*
+  issuing anything — if it can't log, it issues nothing.
 
 The result: even a compromised client (or a prompt-injected agent) can do only
 what its current capability allows, for the few minutes it's valid.
@@ -36,10 +47,20 @@ what its current capability allows, for the few minutes it's valid.
 
 These are missing by design at this stage — not bugs, just not built:
 
-- **The policy engine is a proof-of-concept.** `xgate-policy` decides grants
-  from a small, hard-coded table. There is **no** real policy language,
-  approval workflow, or integration with existing IAM/PAM. The production-grade
-  policy → capability broker is the main thing still to build.
+- **The policy engine is early.** `xgate-policy` now reads an operator-editable
+  JSON policy file (default-deny, deny-beats-allow, per-agent TTL, boundary-aware
+  `/*` path rules, strict validation). It is still **not** a policy language:
+  no conditions (time of day, target host, arguments), no human approval
+  workflow, no max-uses beyond the single-use replay guard, and no integration
+  with existing IAM/PAM. Policy files are trusted input — whoever can edit the
+  file defines what agents may do, so protect it like the CA key.
+- **Audit tamper-evidence has limits.** The hash chain detects edits and
+  deletions *inside* the log. It cannot detect truncation of the tail (the
+  remaining prefix is still a valid chain), and an attacker who holds the
+  signing key (the CA key for the policy log, the host key for the daemon log)
+  can forge a whole new chain. Ship the head hash (printed by `verify-audit`)
+  to a system the attacker can't reach to close the first gap; keep the keys
+  safe for the second. There is no remote log shipping built in.
 - **The enrollment token carries the client key.** `quickstart` and the token
   are test conveniences for easy setup; a real system must never ship a private
   key inside a token. This is fine for testing, unacceptable for production.
@@ -50,6 +71,12 @@ These are missing by design at this stage — not bugs, just not built:
 - **No mid-session revocation.** Revocation is by expiry only — you can't yet
   kill an in-flight capability before its TTL ends (an emergency kill-switch is
   on the roadmap).
+- **Replay-guard persistence is best-effort, not transactional.** The
+  used-serial store is a simple append-only file, matching how the audit log
+  itself is handled. If a disk write to it fails, the in-memory guard still
+  holds for that process's lifetime, but a restart immediately afterward could
+  theoretically reopen a window for that one serial. Worth hardening (e.g. an
+  fsync or a small embedded DB) before this is load-bearing in production.
 - **File capabilities are Unix-shaped and unsafe on Windows.** The `read:` /
   `write:` path check assumes Unix path semantics; do not rely on it on Windows.
   (The interactive shell and `exec` are unaffected.)

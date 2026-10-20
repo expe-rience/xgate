@@ -268,7 +268,8 @@ fast-but-blocked.
 ## Current limitations
 
 xgate is **pre-alpha and unaudited.** The enforcement layer (scoped, expiring,
-audited access) is real and tested; the **policy engine is a proof-of-concept**,
+audited access) is real and tested; the **policy engine is early** (file-based
+rules, no conditions or approval workflow yet),
 the enrollment token carries the client key (test convenience), there's no rate
 limiting or mid-session revocation yet, and file capabilities are unsafe on
 Windows. Full honest account — how access is limited *and* every gap — is in
