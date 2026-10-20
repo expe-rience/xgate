@@ -4,5 +4,6 @@
   "host_cert_path": "host.cert",
   "host_key_path": "host.key",
   "skew_seconds": 30,
-  "audit_path": "audit.jsonl"
+  "audit_path": "audit.jsonl",
+  "replay_store_path": "used-serials.jsonl"
 }

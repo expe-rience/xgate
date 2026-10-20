@@ -27,6 +27,9 @@ Files are named `<tool>-<os>-<arch>`. Tools:
 (`uname -m`: `x86_64`=amd64, `aarch64`/`arm64`=arm64, `armv7l`=arm.)
 Verify downloads: `sha256sum -c SHA256SUMS.txt` in `binaries/`.
 
+These binaries were built from the current source (policy-as-config, tamper-evident
+audit, replay protection). Known limits are in `docs/limitations.md`.
+
 ## A) Try it as remote admin (2 minutes)
 
 On the machine you want to reach (Linux/Mac shown; Windows uses PowerShell as
@@ -55,16 +58,38 @@ macOS note: Gatekeeper blocks unsigned binaries — clear them first:
 
 ## B) Try it as the AI-agent execution boundary (the demo)
 
+Linux or macOS (or WSL on Windows). The demo installs a harmless stub command in
+`/usr/local/bin`, so run it with `sudo` if you are not root:
+
 ```bash
 cd agent-demo
-./run-demo.sh
+sudo ./run-demo.sh
 ```
 
-Watch: a legit "restart payments-service" task gets a 60-second single-use
-capability and runs; a prompt-injected "read prod DB creds / open a shell"
-request is **denied at the policy layer** before it ever reaches xgate; even a
-valid capability can't be used for a different command; and every decision is in
-a signed audit trail. This is the story of the whole project in 90 seconds.
+(`agent-demo/` holds Linux x86-64 binaries, including `mint`, which is only prebuilt
+there. On another platform build the four tools from source:
+`go build -o agent-demo/ ./cmd/mint ./cmd/xgate ./cmd/xgated ./cmd/xgate-policy`.)
+
+Watch: a legit "restart payments-service" task is allowed by `policy.json` and gets
+a 60-second single-use capability, and runs; prompt-injected requests (read prod DB
+credentials, a `../../bin/sh` path trick, a shell) are **denied at the policy layer**
+before any credential exists; a valid capability can't run a different command; a
+captured certificate can't be replayed; and every decision lands in a hash-chained,
+signed audit log, which the demo then verifies, edits, and shows the edit being caught.
+
+### Writing your own policy
+
+Edit `agent-demo/policy.json` (format and rules: `policy.example.json` in the repo):
+
+```bash
+./xgate-policy check policy.json                       # validate
+./xgate-policy explain policy.json sre-agent restart nginx   # dry-run a decision
+./xgate-policy issue --policy policy.json <agent> <action> <resource> ca.key <outdir>
+./xgate-policy verify-audit policy-audit.jsonl <ca-public-key-hex>
+./xgated verify-audit xgate-audit.jsonl host.cert
+```
+
+Default-deny; explicit deny beats allow; typos in the file are errors, not silent gaps.
 
 ## What to report
 
